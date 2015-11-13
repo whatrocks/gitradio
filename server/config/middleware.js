@@ -1,7 +1,10 @@
 var bodyParser = require('body-parser');
 var path = require('path');
+var Event = require('../events/eventModel.js');
 
 module.exports = function(app, express) {
+
+  var eventRouter = express.Router();
 
   app.use(bodyParser.json());
 
@@ -30,10 +33,10 @@ module.exports = function(app, express) {
     console.log(event);
 
     // TODO: Pass the event to client via sockets
-    //
+    // 
 
     // TODO: Store in the mongo db
-    // 
+    Event.create(event);
 
     // Respond to Github
     res.status(200).send("Thank you!");
@@ -41,5 +44,11 @@ module.exports = function(app, express) {
 
   // Callback url
   app.post('/githubCallbackURL', githubHandler);
+
+  // database routes
+  app.use('/api/events', eventRouter);
+
+  // inject routers
+  require('../events/eventRoutes.js')(eventRouter);
 
 };
